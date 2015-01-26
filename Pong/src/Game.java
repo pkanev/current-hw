@@ -12,6 +12,10 @@ public class Game extends Canvas implements Runnable {
 
 	private static final long serialVersionUID = 1L;
 	
+	public static PlayerPaddle player;
+	public static AIPaddle ai;
+	InputHandler IH;
+	
 	JFrame frame; //Window of the game
 	public final int WIDTH = 400; //width of the window
 	public final int HEIGHT = WIDTH * 9 / 16; //height of the window
@@ -21,11 +25,19 @@ public class Game extends Canvas implements Runnable {
 	BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_BGR);
 	
 	boolean gameRunning = false; //whether the game is running
-
+	
+	
 	public void run() {
 		while (gameRunning) { //if gameRunning == true
 			tick();
 			render();
+			
+			try {
+				Thread.sleep(7);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 		}
 	}
 	
@@ -54,10 +66,17 @@ public class Game extends Canvas implements Runnable {
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setTitle(TITLE);
+				
+		IH = new InputHandler(this);
+		
+		player = new PlayerPaddle(10, 60);
+		ai = new AIPaddle(getWidth() - 15, 60);
+		
 	}
 	
 	public void tick(){
-		
+		player.tick(this);
+		ai.tick(this);
 	}
 	
 	public void render(){
@@ -70,8 +89,11 @@ public class Game extends Canvas implements Runnable {
 		Graphics g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 		
-		g.setColor(Color.RED);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		//g.setColor(Color.RED);
+		//g.fillRect(0, 0, getWidth(), getHeight());
+		
+		player.render(g);
+		ai.render(g);
 		
 		g.dispose();
 		bs.show();
